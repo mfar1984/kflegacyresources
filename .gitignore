@@ -62,3 +62,34 @@ hardening/
 *.tar
 *.tar.gz
 *.tgz
+
+# Backups (database dumps, file backups)
+/backups/
+backups/
+
+# Uploads (user uploaded files - PDFs, images)
+/public/uploads/
+public/uploads/
+
+# Log files
+*.log
+advanced-monitor.log
+memory-monitor.log
+
+# Test/monitoring scripts (not needed in production)
+test-*.ps1
+test-*.js
+stress-test.js
+monitor-memory.js
+advanced-monitor.js
+analyze-memory-log.js
+force-gc-test.js
+
+# Development/analysis files
+check-react-loops.md
+ICON-FIX-SUMMARY.md
+MEMORY-LEAK-ANALYSIS.md
+PRODUCTION-DEPLOYMENT-GUIDE.md
+
+# Security tests folder
+security-tests/
