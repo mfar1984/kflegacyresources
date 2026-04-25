@@ -1,0 +1,23 @@
+{
+  "name": "kf-next-security-tests",
+  "version": "1.0.0",
+  "description": "Security testing suite for KF Next application",
+  "scripts": {
+    "test:all": "node test-runner.js",
+    "test:sql-injection": "node tests/sql-injection-test.js",
+    "test:xss": "node tests/xss-test.js",
+    "test:brute-force": "node tests/brute-force-test.js",
+    "test:rate-limit": "node tests/rate-limit-test.js",
+    "test:headers": "node tests/security-headers-test.js",
+    "test:csrf": "node tests/csrf-test.js",
+    "test:session": "node tests/session-hijack-test.js",
+    "test:reverse-engineer": "node tests/reverse-engineering-test.js",
+    "report": "node generate-report.js"
+  },
+  "dependencies": {
+    "axios": "^1.12.2",
+    "chalk": "^4.1.2",
+    "cli-table3": "^0.6.5"
+  },
+  "devDependencies": {}
+}

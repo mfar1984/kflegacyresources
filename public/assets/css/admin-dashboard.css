@@ -1,0 +1,434 @@
+/* Admin Dashboard Styles - EXACT Copy from RISDA-ODOMETER */
+
+/* Global Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 256px; /* 64 * 4 = 256px (w-64) */
+    background-color: #ffffff;
+    color: #1f2937;
+    transition: all 0.3s;
+    z-index: 30;
+    border-right: 1px solid #e5e7eb;
+    margin-right: -1px;
+}
+
+.sidebar-header {
+    padding: 1.5rem 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    height: 82px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.sidebar-nav {
+    padding: 0;
+    overflow-y: auto;
+    max-height: calc(100vh - 82px);
+}
+
+.sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-size: 12px;
+    font-weight: 400; /* Main menu = 400 (normal) - lebih light */
+    transition: all 0.15s;
+    border-radius: 0;
+    margin: 0;
+    text-decoration: none;
+    color: #4b5563;
+    position: relative;
+}
+
+.sidebar-nav-item-active {
+    color: #1f2937;
+    background-color: #dbeafe !important;
+}
+
+.sidebar-nav-item-active::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: #3b82f6;
+}
+
+.sidebar-nav-item-inactive {
+    color: #4b5563;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.sidebar-nav-item-inactive:hover {
+    background-color: #f0f9ff !important;
+    color: #3b82f6 !important;
+}
+
+.sidebar-nav-item-inactive:hover .sidebar-nav-icon {
+    color: #3b82f6 !important;
+}
+
+.sidebar-nav-item-inactive:hover::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: #93c5fd;
+    z-index: 10;
+}
+
+.sidebar-nav-icon {
+    margin-right: 0.75rem;
+    height: 1.25rem;
+    width: 1.25rem;
+    flex-shrink: 0;
+}
+
+/* Submenu Styles */
+.submenu-container {
+    position: relative;
+    margin-left: 24px;
+    margin-top: 4px;
+}
+
+.submenu-container::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: #d1d5db;
+}
+
+.submenu-item {
+    position: relative;
+    padding-left: 20px !important;
+    z-index: 1;
+    font-weight: 300; /* Submenu = 300 (light) - lebih tipis dari main menu */
+}
+
+.submenu-item::before {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 50%;
+    width: 18px;
+    height: 1px;
+    background-color: #d1d5db;
+    z-index: 1;
+}
+
+.submenu-item::after {
+    content: '';
+    position: absolute;
+    left: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: #9ca3af;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.submenu-item.sidebar-nav-item-active::after {
+    display: none;
+}
+
+.submenu-item.sidebar-nav-item-inactive:hover::after {
+    display: none;
+}
+
+/* Separator */
+.sidebar-separator {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+    padding: 0 0.75rem;
+}
+
+.sidebar-separator-line {
+    border: 0;
+    border-top: 1px solid #e5e7eb;
+    margin: 0;
+    height: 1px;
+    background-color: #e5e7eb;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 256px;
+    transition: all 0.3s;
+}
+
+/* Header Styles */
+.header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    margin: 0;
+    padding: 0;
+}
+
+/* Top Bar - EXACT from RISDA */
+.topbar {
+    background-color: #f9fafb; /* bg-gray-50 */
+    border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+    margin: 0;
+    padding: 0;
+}
+
+.topbar-container {
+    padding-left: 1.5rem; /* px-6 */
+    padding-right: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px; /* EXACT 48px from RISDA h-12 */
+    margin: 0;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* space-x-2 */
+    font-size: 11px; /* text-sm but custom 11px */
+    color: #4b5563; /* text-gray-600 */
+}
+
+.welcome-text {
+    font-weight: 400; /* font-normal - tidak bold */
+    color: #374151; /* text-gray-700 */
+}
+
+.topbar-separator {
+    color: #9ca3af; /* text-gray-400 */
+}
+
+.current-date {
+    color: #4b5563; /* text-gray-600 */
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+
+/* Icon Buttons - EXACT from RISDA */
+.topbar-notification-btn,
+.topbar-grid-btn,
+.topbar-help-btn {
+    position: relative;
+    color: #6b7280; /* text-gray-500 */
+    transition: color 0.2s;
+    padding: 0.25rem; /* p-1 = 4px */
+    border-radius: 0; /* NO border-radius */
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; /* Fixed width for consistent sizing */
+    height: 32px; /* Fixed height for consistent sizing */
+}
+
+.topbar-notification-btn .material-symbols-outlined,
+.topbar-grid-btn .material-symbols-outlined,
+.topbar-help-btn .material-symbols-outlined {
+    font-size: 20px; /* EXACT icon size from RISDA */
+    line-height: 1;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+
+.topbar-notification-btn:hover,
+.topbar-grid-btn:hover,
+.topbar-help-btn:hover {
+    color: #1e40af; /* hover:text-risda-primary */
+}
+
+.notification-badge {
+    position: absolute;
+    top: -4px; /* EXACT positioning from RISDA */
+    right: -4px;
+    min-width: 16px; /* h-4 = 16px */
+    height: 16px; /* w-4 = 16px */
+    padding: 0 4px;
+    background-color: #ef4444; /* bg-red-500 */
+    color: #ffffff;
+    font-size: 10px; /* EXACT font size */
+    border-radius: 9999px; /* rounded-full */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500; /* font-medium */
+    line-height: 1;
+}
+
+/* User Button - EXACT from RISDA */
+.topbar-user-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* space-x-3 */
+    font-size: 11px; /* text-sm custom */
+    color: #374151; /* text-gray-700 */
+    transition: color 0.2s;
+    padding: 0.25rem 0.5rem; /* px-2 py-1 */
+    border-radius: 0.25rem; /* rounded */
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.topbar-user-btn:hover {
+    color: #1e40af; /* hover:text-risda-primary */
+}
+
+.user-avatar {
+    width: 24px; /* w-6 = 24px EXACT from RISDA */
+    height: 24px; /* h-6 = 24px */
+    background-color: #1e40af; /* bg-risda-primary */
+    color: #ffffff;
+    border-radius: 9999px; /* rounded-full */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px; /* Icon/text size inside avatar */
+    font-weight: 400; /* font-normal */
+}
+
+/* Breadcrumb Bar - EXACT from RISDA */
+.breadcrumb-bar {
+    background-color: #ffffff; /* bg-white */
+    margin: 0;
+    padding: 0;
+}
+
+.breadcrumb-container {
+    padding-left: 1.5rem; /* px-6 - SAME as topbar */
+    padding-right: 1.5rem;
+    display: flex;
+    align-items: center;
+    height: 32px; /* EXACT 32px from RISDA h-8 */
+    margin: 0;
+}
+
+.breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* space-x-2 */
+    font-size: 12px; /* EXACT 12px from RISDA */
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.breadcrumb-item {
+    color: #1e40af; /* text-risda-primary (blue-800) */
+    transition: color 0.2s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    font-size: 12px; /* EXACT 12px */
+}
+
+.breadcrumb-item:hover {
+    color: #1d4ed8; /* hover:text-blue-700 */
+}
+
+.breadcrumb-item .material-symbols-outlined {
+    font-size: 16px; /* EXACT icon size from RISDA */
+    line-height: 1;
+    vertical-align: middle;
+    margin-right: 4px;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+
+.breadcrumb-separator {
+    color: #9ca3af; /* text-gray-400 */
+    margin: 0 8px; /* mx-2 = 8px EXACT from RISDA */
+    font-size: 12px;
+}
+
+.breadcrumb-current {
+    color: #374151; /* text-gray-700 */
+    font-weight: 400; /* font-normal - tidak bold */
+    font-size: 12px; /* EXACT 12px */
+}
+
+/* Dropdown */
+.topbar-dropdown {
+    position: absolute;
+    right: 0;
+    margin-top: 0.5rem;
+    width: 12rem;
+    background-color: #ffffff;
+    border-radius: 0.375rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e5e7eb;
+    padding: 0.25rem 0;
+    z-index: 50;
+}
+
+.topbar-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    font-size: 11px;
+    color: #1f2937;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    gap: 0.75rem;
+}
+
+.topbar-dropdown-item:hover {
+    background-color: #f9fafb;
+}
+
+/* Body Font */
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    background-color: #f9fafb;
+}
+
+/* Material Symbols Font */
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+}
+

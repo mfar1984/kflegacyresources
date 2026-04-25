@@ -1,0 +1,110 @@
+/* Orders Management Styles */
+.tableCell {
+  padding: 16px 24px !important;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.actionsCell {
+  padding: 16px 24px !important;
+  white-space: nowrap;
+  position: relative;
+  vertical-align: middle;
+}
+
+.actionsContainer {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
+  position: relative;
+  min-height: 24px !important;
+}
+
+.actionButton {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionButton:hover {
+  opacity: 0.7;
+}
+
+.actionIcon {
+  font-size: 18px !important;
+}
+
+.dropdownWrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  z-index: 100000000;
+  min-width: 200px;
+  overflow: hidden;
+}
+
+.dropdownList {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownItem {
+  margin: 0;
+  padding: 0;
+}
+
+.dropdownButton {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #111827;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.dropdownButton:hover:not(:disabled) {
+  background-color: #dbeafe;
+}
+
+.dropdownButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  position: relative;
+}
+
+.tableContainer {
+  min-width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  position: relative;
+}
+
+/* Ensure table doesn't hide overflow from dropdowns */
+.tableContainer tbody tr {
+  position: relative;
+}
+
