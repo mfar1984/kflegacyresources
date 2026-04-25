@@ -1,10 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable Turbopack for production builds (compatibility with cPanel symlinks)
-  experimental: {
-    turbo: false,
-  },
-  
   // Externalize packages that should not be bundled
   serverExternalPackages: ['pdf-lib', 'mysql2'],
   
