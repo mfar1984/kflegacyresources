@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:production": "cross-env NODE_ENV=production next build --no-turbopack",
+    "build:production": "cross-env NODE_ENV=production next build",
     "start": "cross-env NODE_OPTIONS=--max-old-space-size=1024 node server.js",
     "start:next": "next start",
     "lint": "eslint",
