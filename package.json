@@ -23,6 +23,7 @@
     "axios": "^1.12.2",
     "basic-ftp": "^5.2.0",
     "bcryptjs": "^2.4.3",
+    "cross-env": "^10.1.0",
     "formidable": "^3.5.4",
     "header-generator": "^2.1.75",
     "html2canvas": "^1.4.1",
@@ -42,7 +43,6 @@
     "@types/nodemailer": "^8.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "cross-env": "^10.1.0",
     "eslint": "^9.17.0",
     "eslint-config-next": "^16.2.4",
     "typescript": "^6.0.2"
