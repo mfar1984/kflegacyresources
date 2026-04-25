@@ -1,0 +1,3 @@
+{
+  "/api/admin/backup/cleanup": "pages/api/admin/backup/cleanup.js"
+}

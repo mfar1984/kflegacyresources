@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(site)/layout,_N_T_/(site)/other-services/layout,_N_T_/(site)/other-services/it-programming/layout,_N_T_/(site)/other-services/it-programming/page,_N_T_/other-services/it-programming"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHNpdGUp/other-services/it-programming/__PAGE__",
+    "/!KHNpdGUp/other-services/it-programming",
+    "/!KHNpdGUp/other-services",
+    "/!KHNpdGUp",
+    "/_index",
+    "/_head"
+  ]
+}

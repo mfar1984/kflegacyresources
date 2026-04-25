@@ -14,7 +14,7 @@
 /coverage
 
 # next.js
-/.next/
+# /.next/  # COMMENTED: Allow .next for production deployment (shared hosting with limited memory)
 /out/
 
 # production
@@ -44,15 +44,9 @@ next-env.d.ts
 # kiro
 .kiro
 
-# hardening folder (has own git repo)
-hardening/
-
-# Markdown files - allow important docs
-!DEPLOYMENT-GUIDE.md
-!SECURITY-NOTES.md
-!ADVANCED-MONITORING-GUIDE.md
-!LOCAL-MONITORING-GUIDE.md
-!CRON-SETUP-GUIDE.md
+# Markdown files - ignore all except README.md
+*.md
+!README.md
 
 # Archive files
 *.zip
@@ -90,10 +84,7 @@ force-gc-test.js
 generate-bcrypt-hash.js
 
 # Development/analysis markdown files
-check-react-loops.md
-ICON-FIX-SUMMARY.md
-MEMORY-LEAK-ANALYSIS.md
-PRODUCTION-DEPLOYMENT-GUIDE.md
+# (All .md files ignored except README.md - see above)
 
 # Security tests folder
 security-tests/

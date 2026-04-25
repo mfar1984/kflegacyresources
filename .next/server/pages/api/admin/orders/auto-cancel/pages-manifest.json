@@ -1,0 +1,3 @@
+{
+  "/api/admin/orders/auto-cancel": "pages/api/admin/orders/auto-cancel.js"
+}

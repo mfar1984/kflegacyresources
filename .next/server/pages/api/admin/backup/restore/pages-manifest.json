@@ -1,0 +1,3 @@
+{
+  "/api/admin/backup/restore": "pages/api/admin/backup/restore.js"
+}

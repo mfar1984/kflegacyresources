@@ -1,0 +1,3 @@
+{
+  "/api/chip/verify-payment": "pages/api/chip/verify-payment.js"
+}

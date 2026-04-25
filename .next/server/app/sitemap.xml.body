@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>http://localhost:3000/</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/barcode-rfid</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/network</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/security</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/system-storage</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/other-services</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/netgate-1100</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/netgate-2100-base</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/netgate-2100-max</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/netgate-4200-max</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/netgate-6100-base</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/netgate-6100-max</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/netgate-8200-max</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/netgate-8300-base</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/netgate-8300-max</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/netgate-8300-taa</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/basic-website</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/ecommerce-website</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/web-based-system</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/store/web-based-system-android</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/cart</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/checkout</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/products</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/projects</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/privacy</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/disclaimer</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/terms-of-use</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/sitemap</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+  <url><loc>http://localhost:3000/admin/login</loc><lastmod>2026-04-25T17:47:32.552Z</lastmod><changefreq>weekly</changefreq></url>
+</urlset>

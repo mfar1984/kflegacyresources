@@ -1,0 +1,3 @@
+{
+  "/api/admin/backup/download": "pages/api/admin/backup/download.js"
+}

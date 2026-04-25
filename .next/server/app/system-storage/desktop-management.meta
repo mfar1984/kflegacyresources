@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(site)/layout,_N_T_/(site)/system-storage/layout,_N_T_/(site)/system-storage/desktop-management/layout,_N_T_/(site)/system-storage/desktop-management/page,_N_T_/system-storage/desktop-management"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHNpdGUp/system-storage/desktop-management/__PAGE__",
+    "/!KHNpdGUp/system-storage/desktop-management",
+    "/!KHNpdGUp/system-storage",
+    "/!KHNpdGUp",
+    "/_index",
+    "/_head"
+  ]
+}

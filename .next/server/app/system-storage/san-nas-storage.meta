@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(site)/layout,_N_T_/(site)/system-storage/layout,_N_T_/(site)/system-storage/san-nas-storage/layout,_N_T_/(site)/system-storage/san-nas-storage/page,_N_T_/system-storage/san-nas-storage"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHNpdGUp/system-storage/san-nas-storage/__PAGE__",
+    "/!KHNpdGUp/system-storage/san-nas-storage",
+    "/!KHNpdGUp/system-storage",
+    "/!KHNpdGUp",
+    "/_index",
+    "/_head"
+  ]
+}

@@ -1,0 +1,3 @@
+{
+  "/api/chip/create-payment": "pages/api/chip/create-payment.js"
+}

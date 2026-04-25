@@ -1,0 +1,3 @@
+{
+  "/api/admin/orders/delete": "pages/api/admin/orders/delete.js"
+}

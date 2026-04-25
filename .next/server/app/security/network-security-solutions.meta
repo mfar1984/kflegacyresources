@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(site)/layout,_N_T_/(site)/security/layout,_N_T_/(site)/security/network-security-solutions/layout,_N_T_/(site)/security/network-security-solutions/page,_N_T_/security/network-security-solutions"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHNpdGUp/security/network-security-solutions/__PAGE__",
+    "/!KHNpdGUp/security/network-security-solutions",
+    "/!KHNpdGUp/security",
+    "/!KHNpdGUp",
+    "/_index",
+    "/_head"
+  ]
+}

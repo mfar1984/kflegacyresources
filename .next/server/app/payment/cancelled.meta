@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(site)/layout,_N_T_/(site)/payment/layout,_N_T_/(site)/payment/cancelled/layout,_N_T_/(site)/payment/cancelled/page,_N_T_/payment/cancelled"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHNpdGUp/payment/cancelled/__PAGE__",
+    "/!KHNpdGUp/payment/cancelled",
+    "/!KHNpdGUp/payment",
+    "/!KHNpdGUp",
+    "/_index",
+    "/_head"
+  ]
+}

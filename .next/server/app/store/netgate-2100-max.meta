@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(site)/layout,_N_T_/(site)/store/layout,_N_T_/(site)/store/netgate-2100-max/layout,_N_T_/(site)/store/netgate-2100-max/page,_N_T_/store/netgate-2100-max"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHNpdGUp/store/netgate-2100-max/__PAGE__",
+    "/!KHNpdGUp/store/netgate-2100-max",
+    "/!KHNpdGUp/store",
+    "/!KHNpdGUp",
+    "/_index",
+    "/_head"
+  ]
+}

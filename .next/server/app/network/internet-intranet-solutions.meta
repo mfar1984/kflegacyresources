@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(site)/layout,_N_T_/(site)/network/layout,_N_T_/(site)/network/internet-intranet-solutions/layout,_N_T_/(site)/network/internet-intranet-solutions/page,_N_T_/network/internet-intranet-solutions"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHNpdGUp/network/internet-intranet-solutions/__PAGE__",
+    "/!KHNpdGUp/network/internet-intranet-solutions",
+    "/!KHNpdGUp/network",
+    "/!KHNpdGUp",
+    "/_index",
+    "/_head"
+  ]
+}

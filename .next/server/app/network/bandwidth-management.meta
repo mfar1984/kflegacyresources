@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/(site)/layout,_N_T_/(site)/network/layout,_N_T_/(site)/network/bandwidth-management/layout,_N_T_/(site)/network/bandwidth-management/page,_N_T_/network/bandwidth-management"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/!KHNpdGUp/network/bandwidth-management/__PAGE__",
+    "/!KHNpdGUp/network/bandwidth-management",
+    "/!KHNpdGUp/network",
+    "/!KHNpdGUp",
+    "/_index",
+    "/_head"
+  ]
+}
