@@ -1,126 +1,243 @@
-// server.js - Simple cPanel/Passenger friendly Next.js server
-const http = require('http');
+const { createServer } = require('http');
+const { parse } = require('url');
 const next = require('next');
-
-// FORCE set Node.js memory limit to 1GB for testing
-// This MUST be set before any other code runs
-const memoryLimit = process.env.MAX_MEMORY || '1024';
-if (!process.env.NODE_OPTIONS || !process.env.NODE_OPTIONS.includes('max-old-space-size')) {
-  console.log(`⚠️  WARNING: NODE_OPTIONS not set, but memory limit in code won't affect current process`);
-  console.log(`   Current heap limit: ${require('v8').getHeapStatistics().heap_size_limit / 1024 / 1024} MB`);
-  console.log(`   To set 1GB heap, run: $env:NODE_OPTIONS="--max-old-space-size=1024" (PowerShell)`);
-  console.log(`   Or: set NODE_OPTIONS=--max-old-space-size=1024 (CMD)`);
-}
+const { Server } = require('socket.io');
 
 const dev = process.env.NODE_ENV !== 'production';
-const app = next({ dev, dir: __dirname });
+const hostname = process.env.HOSTNAME || 'localhost';
+const port = parseInt(process.env.PORT || '3000', 10);
+
+// Explicitly set the project directory to avoid Next dev watcher path issues
+const app = next({ dev, hostname, port, dir: __dirname });
 const handle = app.getRequestHandler();
 
-// Track server instance
-let server = null;
-let isShuttingDown = false;
-
-// Basic graceful shutdown
-async function gracefulShutdown(signal) {
-  if (isShuttingDown) return;
-  
-  isShuttingDown = true;
-  console.log(`\n${signal} received - Shutting down gracefully...`);
-
-  if (server) {
-    server.close(() => {
-      console.log('Server closed');
-      process.exit(0);
-    });
-  }
-
-  // Force exit after 30s
-  setTimeout(() => {
-    console.warn('Forced shutdown after timeout');
-    process.exit(1);
-  }, 30000);
-}
-
-// Register shutdown handlers
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-
-// Basic error handlers
-process.on('unhandledRejection', (reason) => {
-  console.error('Unhandled Rejection:', reason);
-});
-
-process.on('uncaughtException', (error) => {
-  console.error('Uncaught Exception:', error);
-  gracefulShutdown('UNCAUGHT_EXCEPTION');
-});
-
-// Memory monitoring and cleanup
-let lastMemoryCheck = Date.now();
-const MEMORY_CHECK_INTERVAL = 60000; // Check every 60 seconds
-
-function checkMemory() {
-  const now = Date.now();
-  if (now - lastMemoryCheck < MEMORY_CHECK_INTERVAL) return;
-  
-  lastMemoryCheck = now;
-  const usage = process.memoryUsage();
-  const percentUsed = (usage.heapUsed / usage.heapTotal) * 100;
-  
-  // Log memory usage
-  console.log(`Memory: ${Math.round(percentUsed)}% (${Math.round(usage.heapUsed / 1024 / 1024)}MB / ${Math.round(usage.heapTotal / 1024 / 1024)}MB)`);
-  
-  // MEMORY LEAK FIX: Force garbage collection more aggressively
-  if (percentUsed > 70 && global.gc) {
-    console.log('Memory usage >70%, forcing garbage collection...');
-    try {
-      global.gc();
-      const afterGC = process.memoryUsage();
-      const afterPercent = (afterGC.heapUsed / afterGC.heapTotal) * 100;
-      console.log(`After GC: ${Math.round(afterPercent)}% (${Math.round(afterGC.heapUsed / 1024 / 1024)}MB / ${Math.round(afterGC.heapTotal / 1024 / 1024)}MB)`);
-    } catch (error) {
-      console.error('GC failed:', error);
+// Token rotation scheduler (loaded after build)
+let tokenRotationScheduler;
+if (!dev) {
+  // Only run in production to avoid multiple instances in dev mode
+  try {
+    const tokenRotation = require('./.next/server/app/lib/token-rotation.js');
+    if (tokenRotation && tokenRotation.startTokenRotationScheduler) {
+      tokenRotation.startTokenRotationScheduler();
+      console.log('🔄 Token rotation scheduler initialized');
+    } else {
+      console.log('⚠️  Token rotation scheduler not found in build');
     }
-  }
-  
-  // Warn if memory is critically high
-  if (percentUsed > 90) {
-    console.warn('WARNING: Memory usage is critically high!');
+  } catch (err) {
+    console.log('⚠️  Token rotation scheduler will start with first API call');
   }
 }
-
-// Check memory periodically
-setInterval(checkMemory, MEMORY_CHECK_INTERVAL);
 
 app.prepare().then(() => {
-  const port = process.env.PORT || 3000;
-  const environment = process.env.NODE_ENV || 'development';
-  
-  console.log('========================================');
-  console.log('KF-Next Server Starting');
-  console.log('========================================');
-  console.log(`Environment: ${environment}`);
-  console.log(`Node.js: ${process.version}`);
-  console.log(`Port: ${port}`);
-  console.log(`PID: ${process.pid}`);
-  console.log('========================================');
-
-  server = http.createServer((req, res) => {
-    if (isShuttingDown) {
-      res.writeHead(503, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ success: false, message: 'Server shutting down' }));
-      return;
+  const server = createServer(async (req, res) => {
+    try {
+      const parsedUrl = parse(req.url, true);
+      await handle(req, res, parsedUrl);
+    } catch (err) {
+      console.error('Error occurred handling', req.url, err);
+      res.statusCode = 500;
+      res.end('internal server error');
     }
-    handle(req, res);
+  });
+
+  // Initialize Socket.IO
+  const io = new Server(server, {
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST']
+    },
+    path: '/socket.io/',
+    transports: ['websocket', 'polling']
+  });
+
+  // Store connected users with their roles
+  const connectedUsers = new Map();
+
+  io.on('connection', (socket) => {
+    console.log('✅ Client connected:', socket.id);
+
+    // User joins with their session hash and role (validated)
+    socket.on('join', async ({ sessionHash, userType, userId }) => {
+      try {
+        if (!sessionHash) {
+          socket.emit('joined', { success: false, reason: 'missing_hash' });
+          return;
+        }
+        const verifyUrl = `http://localhost:${port}/api/auth/verify?hash=${encodeURIComponent(sessionHash)}`;
+        const resp = await fetch(verifyUrl, { method: 'GET' });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok || !data?.valid) {
+          console.log('❌ join rejected (invalid hash)', { userType, userId });
+          socket.emit('joined', { success: false, reason: 'invalid_hash' });
+          return;
+        }
+        // Derive trusted identity from server
+        const trustedType = data.userType || userType;
+        const trustedUserId = (trustedType === 'employee' ? data.employeeId : (trustedType === 'client' ? data.clientId : data.adminId)) || userId;
+        console.log(`👤 User joined (validated): ${trustedUserId} (${trustedType})`);
+
+        connectedUsers.set(socket.id, {
+          sessionHash,
+          userType: trustedType,
+          userId: trustedUserId,
+          socketId: socket.id
+        });
+
+        if (trustedType === 'admin') {
+          socket.join('admins');
+        } else if (trustedType === 'client') {
+          socket.join(`client_${trustedUserId}`);
+        } else if (trustedType === 'employee') {
+          socket.join(`employee_${trustedUserId}`);
+        }
+
+        socket.emit('joined', { success: true });
+      } catch (e) {
+        console.error('join validation error:', e);
+        socket.emit('joined', { success: false, reason: 'server_error' });
+      }
+    });
+
+    // Generic HR/public task submitted (notify all admins)
+    socket.on('task_submitted', (data) => {
+      try {
+        const payload = {
+          type: 'task_submitted',
+          module: data?.module || 'general',
+          action: data?.action || 'submitted',
+          entityId: data?.entityId || null,
+          message: data?.message || `New ${data?.module || 'task'} submitted`,
+          link: data?.link || null,    // optional deeplink/hash
+          view: data?.view || null,    // optional dashboard view name
+          timestamp: new Date().toISOString()
+        };
+        console.log('📨 task_submitted received:', payload);
+        
+        // Check how many admins are in the room
+        const adminRoom = io.sockets.adapter.rooms.get('admins');
+        const adminCount = adminRoom ? adminRoom.size : 0;
+        console.log(`👥 Admins in room: ${adminCount}`);
+        
+        io.to('admins').emit('notification', payload);
+        console.log('✅ Notification sent to admins room');
+      } catch (e) {
+        console.error('❌ task_submitted error:', e);
+      }
+    });
+
+    // Generic HR task reviewed (notify specific employee)
+    socket.on('task_reviewed', (data) => {
+      try {
+        const employeeRoom = `employee_${data?.employeeId}`;
+        const payload = {
+          type: 'task_reviewed',
+          module: data?.module || 'general',
+          action: data?.action || 'reviewed',
+          entityId: data?.entityId || null,
+          message: data?.message || `${data?.module || 'Task'} ${data?.result || 'updated'}`,
+          link: data?.link || null,
+          view: data?.view || null,
+          timestamp: new Date().toISOString()
+        };
+        console.log('✅ task_reviewed received:', payload);
+        
+        // Check how many employees are in the room
+        const empRoom = io.sockets.adapter.rooms.get(employeeRoom);
+        const empCount = empRoom ? empRoom.size : 0;
+        console.log(`👤 Employee ${data?.employeeId} in room: ${empCount}`);
+        
+        io.to(employeeRoom).emit('notification', payload);
+        console.log('✅ Notification sent to employee room:', employeeRoom);
+      } catch (e) {
+        console.error('❌ task_reviewed error:', e);
+      }
+    });
+
+    // New ticket notification (client → admins)
+    socket.on('new_ticket', (data) => {
+      console.log('📩 New ticket created:', data.ticketNo);
+      io.to('admins').emit('notification', {
+        type: 'new_ticket',
+        message: `New ticket ${data.ticketNo} from ${data.company}`,
+        ticketNo: data.ticketNo,
+        ticketId: data.ticketId,
+        timestamp: new Date().toISOString()
+      });
+    });
+
+    // New reply notification (admin → client OR client → admins)
+    socket.on('new_reply', (data) => {
+      console.log('💬 New reply:', data);
+      
+      if (data.repliedByType === 'admin') {
+        // Admin replied → notify client
+        io.to(`client_${data.clientId}`).emit('notification', {
+          type: 'admin_reply',
+          message: `Admin replied to ticket ${data.ticketNo}`,
+          ticketNo: data.ticketNo,
+          ticketId: data.ticketId,
+          timestamp: new Date().toISOString()
+        });
+      } else if (data.repliedByType === 'client') {
+        // Client replied → notify all admins
+        io.to('admins').emit('notification', {
+          type: 'client_reply',
+          message: `${data.company} replied to ticket ${data.ticketNo}`,
+          ticketNo: data.ticketNo,
+          ticketId: data.ticketId,
+          timestamp: new Date().toISOString()
+        });
+      }
+    });
+
+    // Status change notification (admin → client)
+    socket.on('status_change', (data) => {
+      console.log('🔄 Status changed:', data);
+      io.to(`client_${data.clientId}`).emit('notification', {
+        type: 'status_change',
+        message: `Ticket ${data.ticketNo} status changed to ${data.newStatus}`,
+        ticketNo: data.ticketNo,
+        ticketId: data.ticketId,
+        status: data.newStatus,
+        timestamp: new Date().toISOString()
+      });
+    });
+
+    // Ticket assigned notification
+    socket.on('ticket_assigned', (data) => {
+      console.log('👨‍💼 Ticket assigned:', data);
+      // Notify specific admin who got assigned
+      const assignedUser = Array.from(connectedUsers.values()).find(
+        u => u.userType === 'admin' && u.userId === data.assignedToId
+      );
+      
+      if (assignedUser) {
+        io.to(assignedUser.socketId).emit('notification', {
+          type: 'ticket_assigned',
+          message: `You've been assigned ticket ${data.ticketNo}`,
+          ticketNo: data.ticketNo,
+          ticketId: data.ticketId,
+          timestamp: new Date().toISOString()
+        });
+      }
+    });
+
+    socket.on('disconnect', () => {
+      const user = connectedUsers.get(socket.id);
+      if (user) {
+        console.log(`❌ User disconnected: ${user.userId} (${user.userType})`);
+        connectedUsers.delete(socket.id);
+      }
+    });
+  });
+
+  server.once('error', (err) => {
+    console.error(err);
+    process.exit(1);
   });
 
   server.listen(port, () => {
-    console.log(`✓ Server ready on port ${port}`);
-    console.log(`✓ Health check: /api/health`);
-    console.log('========================================\n');
+    console.log(`🚀 > Ready on http://${hostname}:${port}`);
+    console.log(`🔌 > Socket.IO ready on ws://${hostname}:${port}/socket.io/`);
   });
-}).catch((err) => {
-  console.error('Failed to start server:', err);
-  process.exit(1);
 });
-

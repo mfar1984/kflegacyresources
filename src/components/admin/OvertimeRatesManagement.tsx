@@ -1,0 +1,341 @@
+'use client';
+
+import { useState, useEffect, useMemo } from 'react';
+import { usePermissions } from '@/hooks/usePermissions';
+import PermissionButton from './PermissionButton';
+import { AdminTable, AdminTableColumn } from '@/components/admin/AdminTable';
+import { AdminTableActions, actionPresets } from '@/components/admin/AdminTableActions';
+import Pagination from '@/components/Pagination';
+
+interface OvertimeRate {
+  id: number;
+  code: string;
+  name: string;
+  description: string;
+  rate_multiplier: number;
+  is_default: boolean;
+  status: string;
+}
+
+export default function OvertimeRatesManagement({ sessionHash }: { sessionHash: string }) {
+  const { canPerformAction } = usePermissions(sessionHash);
+  const [rates, setRates] = useState<OvertimeRate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(10);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [selectedRate, setSelectedRate] = useState<OvertimeRate | null>(null);
+  
+  const [formData, setFormData] = useState({
+    code: '',
+    name: '',
+    description: '',
+    rate_multiplier: '1.5',
+    is_default: false,
+    status: 'active'
+  });
+
+  useEffect(() => {
+    fetchRates();
+  }, [sessionHash]);
+
+  const fetchRates = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/admin/overtime/rates?hash=${sessionHash}`);
+      if (response.ok) {
+        const data = await response.json();
+        setRates(data.rates || data.overtimeRates || []);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const url = showEditModal && selectedRate 
+      ? `/api/admin/overtime/rates/${selectedRate.id}?hash=${sessionHash}`
+      : `/api/admin/overtime/rates?hash=${sessionHash}`;
+    
+    try {
+      const response = await fetch(url, {
+        method: showEditModal ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        alert(`Overtime rate ${showEditModal ? 'updated' : 'created'} successfully`);
+        setShowCreateModal(false);
+        setShowEditModal(false);
+        resetForm();
+        fetchRates();
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Operation failed');
+      }
+    } catch (error) {
+      alert('Operation failed');
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Delete this overtime rate?')) return;
+    try {
+      const response = await fetch(`/api/admin/overtime/rates/${id}?hash=${sessionHash}`, { method: 'DELETE' });
+      if (response.ok) {
+        alert('Deleted successfully');
+        fetchRates();
+      }
+    } catch (error) {
+      alert('Delete failed');
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      code: '',
+      name: '',
+      description: '',
+      rate_multiplier: '1.5',
+      is_default: false,
+      status: 'active'
+    });
+    setSelectedRate(null);
+  };
+
+  const openEditModal = (rate: OvertimeRate) => {
+    setSelectedRate(rate);
+    setFormData({
+      code: rate.code,
+      name: rate.name,
+      description: rate.description,
+      rate_multiplier: rate.rate_multiplier.toString(),
+      is_default: rate.is_default,
+      status: rate.status
+    });
+    setShowEditModal(true);
+  };
+
+  const filteredRates = rates.filter((rate) => {
+    const matchesSearch = rate.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         rate.code.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = !filterStatus || rate.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  const totalPages = Math.ceil(filteredRates.length / pageSize);
+  const paginatedRates = filteredRates.slice((page - 1) * pageSize, page * pageSize);
+
+  const getStatusBadge = (status: string) => status === 'active' ? 
+    <span style={{ backgroundColor: '#10b981', color: '#fff', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500 }}>Active</span> : 
+    <span style={{ backgroundColor: '#6b7280', color: '#fff', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: 500 }}>Inactive</span>;
+
+  const tableColumns: AdminTableColumn<OvertimeRate>[] = useMemo(() => [
+    { key: 'code', label: 'Code', render: (value) => <div style={{ fontSize: '12px', fontWeight: 600, color: '#1f2937' }}>{String(value)}</div> },
+    { key: 'name', label: 'Rate Name', render: (value) => <div style={{ fontSize: '12px', fontWeight: 500, color: '#1f2937' }}>{String(value)}</div> },
+    { key: 'rate_multiplier', label: 'Multiplier', render: (value) => <div style={{ fontSize: '12px', color: '#4b5563' }}>{Number(value).toFixed(2)}x</div> },
+    { key: 'is_default', label: 'Default', align: 'center', render: (value) => value ? <i className="bi bi-check-circle-fill" style={{ color: '#10b981', fontSize: '14px' }}></i> : <i className="bi bi-x-circle-fill" style={{ color: '#6b7280', fontSize: '14px' }}></i> },
+    { key: 'status', label: 'Status', render: (value) => getStatusBadge(String(value)) },
+    { key: 'actions', label: 'Actions', align: 'center', width: '140px', render: (_, row) => (
+      <AdminTableActions actions={[
+        actionPresets.view(() => { setSelectedRate(row); setShowViewModal(true); }),
+        ...(canPerformAction('overtime_rates', 'edit') ? [actionPresets.edit(() => { setSelectedRate(row); setFormData({ code: row.code, name: row.name, description: row.description, rate_multiplier: row.rate_multiplier.toString(), is_default: row.is_default, status: row.status }); setShowEditModal(true); })] : []),
+        ...(canPerformAction('overtime_rates', 'delete') ? [actionPresets.delete(() => handleDelete(row.id))] : [])
+      ]} />
+    )}
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [rates, canPerformAction]);
+
+  if (loading) {
+    return (
+      <div className="text-center py-5">
+        <div className="spinner-border text-primary mb-3" style={{ width: 48, height: 48 }} />
+        <p className="text-muted mb-0" style={{ fontSize: 12 }}>Loading overtime rates...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h5 className="mb-1" style={{ fontSize: '18px', fontWeight: 600 }}>Overtime Rates Management</h5>
+          <p className="text-muted mb-0" style={{ fontSize: '13px' }}>Manage overtime pay rate multipliers</p>
+        </div>
+        <PermissionButton sessionHash={sessionHash} module="overtime_rates" action="create" className="btn btn-primary"
+          onClick={() => setShowCreateModal(true)} style={{ fontSize: '11px', padding: '8px 16px', borderRadius: '6px' }}>
+          <i className="bi bi-plus-circle me-2"></i>Add Overtime Rate
+        </PermissionButton>
+      </div>
+
+      <form className="row g-3 mb-4">
+        <div className="col-md-6">
+          <input type="text" className="form-control" placeholder="Search by name or code..." value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} style={{ fontSize: '12px', padding: '8px 12px', borderRadius: '6px', border: '1px solid #d1d5db', backgroundColor: '#ffffff' }} />
+        </div>
+        <div className="col-md-4">
+          <select className="form-select" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
+            style={{ fontSize: '12px', padding: '8px 12px', borderRadius: '6px', border: '1px solid #d1d5db', backgroundColor: '#ffffff' }}>
+            <option value="">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div className="col-md-2">
+          <button type="button" onClick={() => { setSearchQuery(''); setFilterStatus(''); }} className="btn btn-outline-danger w-100"
+            style={{ fontSize: '12px', padding: '8px 12px', borderRadius: '6px', fontWeight: 500 }}>Reset</button>
+        </div>
+      </form>
+
+      <div style={{ marginBottom: '24px' }}>
+        <AdminTable<OvertimeRate> columns={tableColumns} data={paginatedRates} emptyMessage="No overtime rates found." />
+      </div>
+
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center">
+          <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
+        </div>
+      )}
+
+      {/* Create/Edit Modal */}
+      {(showCreateModal || showEditModal) && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex={-1}>
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header" style={{ borderBottom: '1px solid #e5e7eb', padding: '16px' }}>
+                <h5 className="modal-title" style={{ fontSize: '14px', fontWeight: 600 }}>
+                  <i className={`bi bi-${showCreateModal ? 'plus' : 'pencil'}-circle me-2`}></i>
+                  {showCreateModal ? 'Add Overtime Rate' : 'Edit Overtime Rate'}
+                </h5>
+                <button onClick={() => { showCreateModal ? setShowCreateModal(false) : setShowEditModal(false); resetForm(); }}
+                  className="btn-close" style={{ fontSize: '10px' }}></button>
+              </div>
+              <form onSubmit={handleSubmit}>
+                <div className="modal-body" style={{ padding: '24px' }}>
+                  <div className="row g-3">
+                    <div className="col-md-4">
+                      <label style={{ fontSize: '11px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
+                        Code <span style={{ color: '#ef4444' }}>*</span>
+                      </label>
+                      <input type="text" className="form-control" required maxLength={10} value={formData.code}
+                        onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })} placeholder="e.g., NRM"
+                        style={{ fontSize: '11px', padding: '8px 12px', borderRadius: '2px' }} />
+                    </div>
+                    <div className="col-md-8">
+                      <label style={{ fontSize: '11px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
+                        Rate Name <span style={{ color: '#ef4444' }}>*</span>
+                      </label>
+                      <input type="text" className="form-control" required value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="e.g., Normal Rate"
+                        style={{ fontSize: '11px', padding: '8px 12px', borderRadius: '2px' }} />
+                    </div>
+                    <div className="col-md-12">
+                      <label style={{ fontSize: '11px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>Description</label>
+                      <textarea className="form-control" rows={2} value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })} placeholder="Brief description"
+                        style={{ fontSize: '11px', padding: '8px 12px', borderRadius: '2px' }} />
+                    </div>
+                    <div className="col-md-6">
+                      <label style={{ fontSize: '11px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
+                        Rate Multiplier <span style={{ color: '#ef4444' }}>*</span>
+                      </label>
+                      <input type="number" step="0.1" min="1" className="form-control" required value={formData.rate_multiplier}
+                        onChange={(e) => setFormData({ ...formData, rate_multiplier: e.target.value })} placeholder="e.g., 1.5"
+                        style={{ fontSize: '11px', padding: '8px 12px', borderRadius: '2px' }} />
+                      <small style={{ fontSize: '10px', color: '#6b7280' }}>e.g., 1.5 = 1.5x hourly rate</small>
+                    </div>
+                    <div className="col-md-6">
+                      <label style={{ fontSize: '11px', fontWeight: 500, color: '#374151', marginBottom: '6px' }}>
+                        Status <span style={{ color: '#ef4444' }}>*</span>
+                      </label>
+                      <select className="form-select" required value={formData.status}
+                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                        style={{ fontSize: '11px', padding: '8px 12px', borderRadius: '2px' }}>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                      </select>
+                    </div>
+                    <div className="col-md-12">
+                      <div className="form-check" style={{ padding: '12px', backgroundColor: '#f9fafb', borderRadius: '2px' }}>
+                        <input type="checkbox" className="form-check-input" id="is_default" checked={formData.is_default}
+                          onChange={(e) => setFormData({ ...formData, is_default: e.target.checked })} />
+                        <label className="form-check-label" htmlFor="is_default" style={{ fontSize: '11px', fontWeight: 500 }}>
+                          <i className="bi bi-star me-2"></i>Set as Default Rate
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer" style={{ borderTop: '1px solid #e5e7eb', padding: '12px 16px' }}>
+                  <button type="button" onClick={() => { showCreateModal ? setShowCreateModal(false) : setShowEditModal(false); resetForm(); }}
+                    className="btn btn-outline-secondary" style={{ fontSize: '11px', padding: '8px 16px', borderRadius: '6px' }}>Cancel</button>
+                  <button type="submit" className="btn btn-primary" style={{ fontSize: '11px', padding: '8px 16px', borderRadius: '6px' }}>
+                    <i className="bi bi-check-circle me-2"></i>{showCreateModal ? 'Create' : 'Update'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Modal */}
+      {showViewModal && selectedRate && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex={-1}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header" style={{ borderBottom: '1px solid #e5e7eb', padding: '16px' }}>
+                <h5 className="modal-title" style={{ fontSize: '14px', fontWeight: 600 }}>
+                  <i className="bi bi-info-circle me-2"></i>Overtime Rate Details
+                </h5>
+                <button onClick={() => setShowViewModal(false)} className="btn-close" style={{ fontSize: '10px' }}></button>
+              </div>
+              <div className="modal-body" style={{ padding: '24px' }}>
+                <div className="row g-3">
+                  <div className="col-md-4">
+                    <label style={{ fontSize: '10px', color: '#6b7280', marginBottom: '4px' }}>Code</label>
+                    <div><span style={{ backgroundColor: '#f3f4f6', padding: '6px 12px', borderRadius: '2px', fontSize: '12px', fontWeight: 600, color: '#374151' }}>{selectedRate.code}</span></div>
+                  </div>
+                  <div className="col-md-8">
+                    <label style={{ fontSize: '10px', color: '#6b7280', marginBottom: '4px' }}>Name</label>
+                    <div style={{ fontSize: '13px', fontWeight: 600 }}>{selectedRate.name}</div>
+                  </div>
+                  <div className="col-md-12">
+                    <label style={{ fontSize: '10px', color: '#6b7280', marginBottom: '4px' }}>Description</label>
+                    <div style={{ fontSize: '12px' }}>{selectedRate.description || '-'}</div>
+                  </div>
+                  <div className="col-md-6">
+                    <label style={{ fontSize: '10px', color: '#6b7280', marginBottom: '4px' }}>Rate Multiplier</label>
+                    <div style={{ fontSize: '16px', fontWeight: 700, color: '#10b981' }}>{selectedRate.rate_multiplier}x</div>
+                  </div>
+                  <div className="col-md-6">
+                    <label style={{ fontSize: '10px', color: '#6b7280', marginBottom: '4px' }}>Status</label>
+                    <div><span style={{ backgroundColor: selectedRate.status === 'active' ? '#10b981' : '#6b7280', color: '#ffffff', padding: '4px 8px', borderRadius: '2px', fontSize: '10px', fontWeight: 500 }}>{selectedRate.status === 'active' ? 'Active' : 'Inactive'}</span></div>
+                  </div>
+                  <div className="col-md-12">
+                    <label style={{ fontSize: '10px', color: '#6b7280', marginBottom: '4px' }}>Default Rate</label>
+                    <div style={{ fontSize: '12px' }}>
+                      {selectedRate.is_default ? <span style={{ color: '#f59e0b' }}><i className="bi bi-star-fill me-1"></i>Yes</span> : <span style={{ color: '#6b7280' }}><i className="bi bi-x-circle-fill me-1"></i>No</span>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer" style={{ borderTop: '1px solid #e5e7eb', padding: '12px 16px' }}>
+                <button onClick={() => setShowViewModal(false)} className="btn btn-secondary" style={{ fontSize: '11px', padding: '8px 16px', borderRadius: '6px' }}>Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
