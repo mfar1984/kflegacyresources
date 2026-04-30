@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import ProjectsClient from "./ProjectsClient";
-import projectsData from "@/../../data/projects.json";
 
 export const metadata: Metadata = {
   title: "Project Records",
@@ -45,7 +44,7 @@ export default function Page() {
         </div>
       </section>
 
-      <ProjectsClient initialProjects={projectsData} />
+      <ProjectsClient initialProjects={[]} />
     </main>
   );
 }
